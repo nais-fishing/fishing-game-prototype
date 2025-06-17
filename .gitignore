@@ -1,0 +1,20 @@
+# macOS
+.DS_Store
+
+# Xcode
+*.xcworkspace
+*.xcuserdata/
+*.xcuserstate
+DerivedData/
+
+# SwiftPM
+.build/
+Packages/
+.swiftpm/
+
+# Logs
+*.log
+
+# Playground
+timeline.xctimeline
+playground.xcworkspace
