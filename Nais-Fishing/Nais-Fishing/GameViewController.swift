@@ -7,49 +7,46 @@
 
 import UIKit
 import SpriteKit
-import GameplayKit
 
 class GameViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        // Load 'GameScene.sks' as a GKScene. This provides gameplay related content
-        // including entities and graphs.
-        if let scene = GKScene(fileNamed: "FishingScene") {
+        // Cast view sebagai SKView
+        if let skView = self.view as? SKView {
             
-            // Get the SKScene from the loaded GKScene
-            if let sceneNode = scene.rootNode as! FishingScene? {
-                
-                // Copy gameplay related content over to the scene
-                sceneNode.entities = scene.entities
-                sceneNode.graphs = scene.graphs
-                
-                // Set the scale mode to scale to fit the window
-                sceneNode.scaleMode = .aspectFill
-                
-                // Present the scene
-                if let view = self.view as! SKView? {
-                    view.presentScene(sceneNode)
-                    
-                    view.ignoresSiblingOrder = true
-                    
-                    view.showsFPS = true
-                    view.showsNodeCount = true
-                }
-            }
+            // Buat scene dengan ukuran sama dengan view
+            let scene = FishingScene(size: skView.bounds.size)
+            
+            // Set scale mode
+            scene.scaleMode = .aspectFill
+            
+            // Present scene ke view
+            skView.presentScene(scene)
+            
+            // Setting untuk development/debugging
+            skView.ignoresSiblingOrder = true
+            skView.showsFPS = true           // Tampilkan FPS counter
+            skView.showsNodeCount = true     // Tampilkan jumlah node
+            
+            print("🎮 GameViewController: Scene loaded successfully!")
+        } else {
+            print("❌ Error: View is not SKView!")
         }
     }
 
+    // MARK: - Orientation Support
     override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
         if UIDevice.current.userInterfaceIdiom == .phone {
-            return .allButUpsideDown
+            return .allButUpsideDown  // iPhone: semua kecuali terbalik
         } else {
-            return .all
+            return .all              // iPad: semua orientasi
         }
     }
 
+    // MARK: - Status Bar
     override var prefersStatusBarHidden: Bool {
-        return true
+        return true  // Sembunyikan status bar untuk full-screen game
     }
 }
