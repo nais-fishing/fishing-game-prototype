@@ -21,7 +21,7 @@ class FishingScene: SKScene {
         setupRiver()
         setupBear()
         
-        scene?.scaleMode = .aspectFit
+        scaleMode = .resizeFill
         
         castingManager = CastingManager(scene: self)
         
@@ -32,16 +32,11 @@ class FishingScene: SKScene {
     
     func setupRiver() {
         river = SKSpriteNode(imageNamed: "bg-test")
-        river.position = CGPoint(x: 0, y: 0)
+        river.position = .zero
         river.zPosition = 0
-        
-        let screenWidth = size.width
-        let screenHeight = size.height
-        
-        let riverWidth = screenWidth
-        let riverHeight = screenHeight
-        
-        river.size = CGSize(width: riverWidth, height: riverHeight)
+
+        // Gunakan ukuran scene yang sudah aktif
+        river.size = self.size
         
         addChild(river)
         
@@ -51,12 +46,14 @@ class FishingScene: SKScene {
     func setupBear() {
         bear = SKSpriteNode(imageNamed: "bear-idle-test")
         bear.name = "bearNode" // penting! agar FSM bisa akses dengan childNode(withName:)
-        bear.position = CGPoint(x: -220, y: 0)
+        bear.position = CGPoint(x: -200, y: 0)
         bear.zPosition = 1
         
         bear.size = CGSize(width: 100, height: 100)
         
         addChild(bear)
+        
+        print("✅ Bear is there")
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
