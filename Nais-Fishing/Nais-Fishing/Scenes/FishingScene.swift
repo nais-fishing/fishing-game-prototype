@@ -11,6 +11,8 @@ class FishingScene: SKScene {
     
     var river: SKSpriteNode!
     var bear: SKSpriteNode!
+    var fish: SKSpriteNode!
+    
     var stateMachine: FishingGameStateMachine!
     var castingManager: CastingManager!
     
@@ -20,6 +22,7 @@ class FishingScene: SKScene {
         
         setupRiver()
         setupBear()
+        spawnFishes()
         
         scaleMode = .resizeFill
         
@@ -54,6 +57,60 @@ class FishingScene: SKScene {
         addChild(bear)
         
         print("✅ Bear is there")
+    }
+    
+    func setupFish() {
+        let fish = SKSpriteNode(color: .white, size: CGSize(width: CGFloat.random(in: 20...30), height: CGFloat.random(in: 35...45))) // randomize besar ikan
+        fish.alpha = 0 // agar fishnya transparan
+        
+        let randomX = CGFloat.random(in: -75...75)
+        let startY = size.height/2 + fish.size.height
+        fish.position = CGPoint(x: randomX, y: startY)
+        
+        fish.zPosition = 1
+        
+        //fish physics
+        fish.physicsBody = SKPhysicsBody(rectangleOf: fish.size)
+        fish.physicsBody?.isDynamic = true
+        fish.physicsBody?.categoryBitMask = 2 // Fish category
+        fish.physicsBody?.contactTestBitMask = 1 // Detect bait
+        fish.physicsBody?.collisionBitMask = 0 // No physical collision
+        
+        addChild(fish)
+        
+        let triggerY: CGFloat = 100
+        let moveToTriggerAction = SKAction.moveTo(y: triggerY, duration: 2.0)
+        
+        //MOVE FROM TOP TO BOTTOM
+        let endY = -size.height/2 - fish.size.height
+        let totalDistance = abs(endY - triggerY)
+        let speed: CGFloat = 100
+        let duration = totalDistance / speed
+        
+        let moveAction = SKAction.moveTo(y: endY, duration: TimeInterval(duration))
+        
+        // move side to side
+        let sideToSide = CGFloat.random(in: -75...75)
+        let oscDuration = Double.random(in: 1.0...1.5)
+        let oscAction = SKAction.repeatForever(SKAction.sequence([SKAction.moveBy(x: sideToSide, y: 0, duration: oscDuration)]))
+        let finalPhaseAction = SKAction.group([oscAction, moveAction])
+           
+        // Sequence: straight down → side-to-side while moving down → remove
+        let removeAction = SKAction.removeFromParent()
+        let completeSequence = SKAction.sequence([
+            moveToTriggerAction,
+            finalPhaseAction,
+            removeAction
+        ])
+        
+        fish.run(completeSequence)
+    }
+    
+    func spawnFishes() {
+        run(SKAction.repeatForever(SKAction.sequence([
+            SKAction.run(setupFish),
+            SKAction.wait(forDuration: 1.0, withRange: 0.1)
+        ])))
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
