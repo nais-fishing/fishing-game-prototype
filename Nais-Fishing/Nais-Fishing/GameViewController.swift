@@ -17,10 +17,10 @@ class GameViewController: UIViewController {
         if let skView = self.view as? SKView {
             
             // Buat scene dengan ukuran sama dengan view
-            let scene = FishingScene(size: skView.bounds.size)
+            let scene = FishingScene(size: CGSize(width: 1334, height: 750))
             
             // Set scale mode
-            scene.scaleMode = .aspectFill
+            scene.scaleMode = .resizeFill
             
             // Present scene ke view
             skView.presentScene(scene)
@@ -38,12 +38,13 @@ class GameViewController: UIViewController {
 
     // MARK: - Orientation Support
     override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
-        if UIDevice.current.userInterfaceIdiom == .phone {
-            return .allButUpsideDown  // iPhone: semua kecuali terbalik
-        } else {
-            return .all              // iPad: semua orientasi
-        }
+        return .landscape
     }
+
+    override var shouldAutorotate: Bool {
+        return true
+    }
+
 
     // MARK: - Status Bar
     override var prefersStatusBarHidden: Bool {
