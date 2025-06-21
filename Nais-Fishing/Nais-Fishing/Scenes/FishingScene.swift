@@ -19,6 +19,7 @@ class FishingScene: SKScene, SKPhysicsContactDelegate {
     
     var stateMachine: FishingGameStateMachine!
     var castingManager: CastingManager!
+    var hookSystem: HookSystem!
     
     var isFishCaught: Bool = false
     
@@ -30,8 +31,7 @@ class FishingScene: SKScene, SKPhysicsContactDelegate {
         setupBear()
         spawnFishes()
         
-        setupBait()
-        setupWarning()
+        setupHookSystem()
         
         scaleMode = .resizeFill
         
@@ -68,6 +68,11 @@ class FishingScene: SKScene, SKPhysicsContactDelegate {
         addChild(bear)
         
         print("✅ Bear is there")
+    }
+    
+    func setupHookSystem() {
+        hookSystem = HookSystem(scene: self)
+        hookSystem.delegate = self
     }
     
     func setupFish() {
@@ -124,101 +129,14 @@ class FishingScene: SKScene, SKPhysicsContactDelegate {
         ])))
     }
     
-    func setupBait() {
-        bait = SKSpriteNode(imageNamed: "bait")
-        bait.size = CGSize(width: 25, height: 25)
-        bait.position = CGPoint(x: -90, y: -30)
-        bait.zPosition = 3
-
-        //Set up physics body for bait
-        bait.physicsBody = SKPhysicsBody(circleOfRadius: 7.5)
-        bait.physicsBody?.isDynamic = true
-        bait.physicsBody?.affectedByGravity = false
-        bait.physicsBody?.categoryBitMask = 1 // Bait category
-        bait.physicsBody?.contactTestBitMask = 2 // Test contact with fish
-        bait.physicsBody?.collisionBitMask = 0 // No collision
-                
-        addChild(bait)
-                
-        // Add subtle bobbing animation to bait
-        let bobUp = SKAction.moveBy(x: 0, y: 3, duration: 1.0)
-        let bobDown = SKAction.moveBy(x: 0, y: -3, duration: 1.0)
-        let bobSequence = SKAction.sequence([bobUp, bobDown])
-        let bobForever = SKAction.repeatForever(bobSequence)
-        bait.run(bobForever, withKey: "bobbing")
-    }
-    
-    func setupWarning() {
-        caughtSign = SKLabelNode(text: "!")
-        caughtSign.fontName = "Arial-BoldMT"
-        caughtSign.fontSize = 28
-        caughtSign.fontColor = .yellow
-        caughtSign.position = CGPoint(x: 0, y: 100)
-        caughtSign.zPosition = 10
-        caughtSign.alpha = 0
-        
-        addChild(caughtSign)
-    }
-    
-    func showFishCaughtSign() {
-            guard !isFishCaught else { return }
-            
-            isFishCaught = true
-            
-            // Show caught sign with animation
-            let scaleUp = SKAction.scale(to: 1.2, duration: 0.2)
-            let scaleDown = SKAction.scale(to: 1.0, duration: 0.2)
-            let fadeIn = SKAction.fadeIn(withDuration: 0.3)
-            let bounce = SKAction.sequence([scaleUp, scaleDown])
-            
-            let showSign = SKAction.group([fadeIn, bounce])
-            caughtSign.run(showSign)
-            
-            // Reset after 2 seconds
-//            let wait = SKAction.wait(forDuration: 2.0)
-//            let resetCatch = SKAction.run { [weak self] in
-//                self?.resetCatchState()
-//            }
-//            run(SKAction.sequence([wait, resetCatch]))
-    }
-    
-    func showExclamationMarkAboveBait() {
-        // Position the "!" sign above the bait
-        caughtSign.position = CGPoint(x: bait.position.x, y: bait.position.y + 40)
-        
-        // Show and animate the "!" sign
-        let fadeIn = SKAction.fadeIn(withDuration: 0.2)
-        let scaleUp = SKAction.scale(to: 1.2, duration: 0.2)
-        let scaleDown = SKAction.scale(to: 1.0, duration: 0.2)
-        let fadeOut = SKAction.fadeOut(withDuration: 0.2)
-        
-        let sequence = SKAction.sequence([fadeIn, scaleUp, scaleDown, fadeOut])
-        
-        // Run the animation on the "!" sign
-        caughtSign.run(sequence)
-    }
-
-    
     func didBegin(_ contact: SKPhysicsContact) {
         let bodyA = contact.bodyA
         let bodyB = contact.bodyB
-        
-        // Check if bait and fish collided
-        if (bodyA.categoryBitMask == 1 && bodyB.categoryBitMask == 2) ||
-           (bodyA.categoryBitMask == 2 && bodyB.categoryBitMask == 1) {
             
-            // Remove the caught fish
-            if bodyA.categoryBitMask == 2 {
-                bodyA.node?.removeFromParent()
-            } else {
-                bodyB.node?.removeFromParent()
-            }
+        if let fishNode = hookSystem.shouldHandleContact(between: bodyA, and: bodyB) {
+            hookSystem.handleFishContact(with: fishNode)
             
-            self.showFishCaughtSign()  // Show the fish caught sign
-            
-            // Show "!" sign above the bait
-            showExclamationMarkAboveBait()
-            
+            // Trigger haptic feedback
             DispatchQueue.global().async { [weak self] in
                 self?.hapticManager?.playPop()
             }
@@ -229,5 +147,24 @@ class FishingScene: SKScene, SKPhysicsContactDelegate {
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         // Misalnya: Saat pertama disentuh, masuk ke CastingState
         stateMachine.enter(CastingState.self)
+    }
+}
+
+extension FishingScene: HookSystemDelegate {
+    func hookSystem(_ hookSystem: HookSystem) {
+        // Handle fish caught event
+        print("🎣 Fish caught at position: \(position)")
+        
+        // You can add score updates, sound effects, or other game logic here
+        // For example:
+        // gameScore += 10
+        // playFishCaughtSound()
+    }
+    
+    func hookSystemDidShowSign(_ hookSystem: HookSystem) {
+        // Handle exclamation mark shown event
+        print("❗ Exclamation mark shown!")
+        
+        // You can add additional effects here if needed
     }
 }
