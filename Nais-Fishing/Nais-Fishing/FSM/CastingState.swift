@@ -20,7 +20,7 @@ class CastingState: GKState {
             return
         }
         
-        bear.texture = SKTexture(imageNamed: "bear-casting-test")
+        bear.texture = SKTexture(imageNamed: "bear-casting")
         
         scene.castingManager.playCastingAnimation {
             self.stateMachine?.enter(WaitingForHookState.self)

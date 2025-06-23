@@ -20,6 +20,6 @@ class WaitingForHookState: GKState {
             return
         }
 
-        bear.texture = SKTexture(imageNamed: "bear-waiting-test")
+        bear.texture = SKTexture(imageNamed: "bear-wait")
     }
 }

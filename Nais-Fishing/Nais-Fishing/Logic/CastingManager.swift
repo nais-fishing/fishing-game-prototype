@@ -16,7 +16,7 @@ class CastingManager {
 
     func playCastingAnimation(completion: @escaping () -> Void) {
         // Ganti texture ke posisi melempar
-        scene.bear.texture = SKTexture(imageNamed: "bear-casting-test")
+        scene.bear.texture = SKTexture(imageNamed: "bear-casting")
 
         // (Opsional) Animasi gerakan
         let wait = SKAction.wait(forDuration: 0.8)
