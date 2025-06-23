@@ -1,26 +1,25 @@
 //
-//  ReelingState.swift
+//  WaitingForHookState.swift
 //  Nais-Fishing
 //
-//  Created by Niken Larasati on 18/06/25.
+//  Created by Niken Larasati on 19/06/25.
 //
 
 import GameplayKit
 
-class ReelingState : GKState {
+class WaitingForHookState: GKState {
     unowned let scene: FishingScene
-    
+
     init(scene: FishingScene) {
         self.scene = scene
     }
-    
+
     override func didEnter(from previousState: GKState?) {
         guard let bear = scene.childNode(withName: "bearNode") as? SKSpriteNode else {
-            print("❌ Bear node not found in ReelingState")
+            print("❌ Bear node not found in WaitingForHookState")
             return
         }
-        
-        bear.texture = SKTexture(imageNamed: "bear-reeling")
+
+        bear.texture = SKTexture(imageNamed: "bear-wait")
     }
-    
 }
