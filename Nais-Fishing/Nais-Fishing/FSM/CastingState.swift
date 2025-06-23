@@ -45,6 +45,9 @@ class CastingState: GKState {
         if let bear = scene.childNode(withName: "bearNode") as? SKSpriteNode {
             bear.texture = SKTexture(imageNamed: "bear-waiting-test")
         }
+      
+        bear.texture = SKTexture(imageNamed: "bear-casting")
+
         
         scene.playCastAnimation(withPower: scene.castPower) {
             self.stateMachine?.enter(WaitingForHookState.self)

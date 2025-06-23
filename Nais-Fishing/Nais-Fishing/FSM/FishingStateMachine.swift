@@ -12,7 +12,8 @@ class FishingGameStateMachine: GKStateMachine {
         super.init(states: [
             IdleState(scene: scene),
             CastingState(scene: scene),
-            WaitingForHookState(scene: scene)
+            WaitingForHookState(scene: scene),
+            ReelingState(scene: scene)
         ])
         enter(IdleState.self)
     }

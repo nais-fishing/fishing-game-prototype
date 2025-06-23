@@ -27,8 +27,8 @@ class GameViewController: UIViewController {
             
             // Setting untuk development/debugging
             skView.ignoresSiblingOrder = true
-            skView.showsFPS = true           // Tampilkan FPS counter
-            skView.showsNodeCount = true     // Tampilkan jumlah node
+            skView.showsFPS = false             // Tampilkan FPS counter
+            skView.showsNodeCount = false       // Tampilkan jumlah node
             
             print("🎮 GameViewController: Scene loaded successfully!")
         } else {
