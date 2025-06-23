@@ -78,11 +78,11 @@ class FishingLineSystem {
         case is IdleState:
             return false
         case is CastingState:
-            return true
+            return false
         case is WaitingForHookState:
             return true
-//        case is ReelingState:
-//            return true
+        case is ReelingState:
+            return true
         default :
         return false
             
@@ -94,7 +94,7 @@ class FishingLineSystem {
         var baseProperties: lineProperties
         
         switch state {
-        case is CastingState:
+        case is ReelingState:
             baseProperties = lineProperties(
                 color: .white,
                 width: 2,
@@ -112,7 +112,6 @@ class FishingLineSystem {
                 tension: 0.1,
                 isStraight: true
             )
-//        case is ReelingState:
         default:
             baseProperties = lineProperties(
                 color: .white,
@@ -176,15 +175,15 @@ class FishingLineSystem {
     private func createLinePath(from startPoint: CGPoint, to endPoint: CGPoint, tension: CGFloat, distance: CGFloat, isStraight: Bool) -> CGPath {
             
         let path = CGMutablePath()
-        let baitTopPosition = CGPoint(x: endPoint.x + 4, y: endPoint.y + 13)
+        
         
         if isStraight == false {
-            
+            let baitTopPosition = CGPoint(x: endPoint.x, y: endPoint.y + 13)
             path.move(to: startPoint)
             path.addLine(to: baitTopPosition)
             
         } else {
-            
+            let baitTopPosition = CGPoint(x: endPoint.x + 4, y: endPoint.y + 13)
             let distanceMultiplier = CGFloat(distance)
             let lineLength = sqrt(pow(endPoint.x - startPoint.x, 2) + pow(endPoint.y - startPoint.y, 2))
             

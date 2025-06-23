@@ -172,6 +172,9 @@ extension FishingScene: HookSystemDelegate {
         // Handle fish caught event
         print("🎣 Fish caught at position: \(position)")
         
+        if stateMachine.currentState is WaitingForHookState {
+            stateMachine.enter(ReelingState.self)
+        }
         // You can add score updates, sound effects, or other game logic here
         // For example:
         // gameScore += 10
@@ -196,8 +199,8 @@ extension FishingScene: FishingLineSystemDelegate {
         switch state {
         case is WaitingForHookState:
             return CGPoint(x: bear.position.x + 77, y: bear.position.y - 20) // For WaitingForHookState
-        case is CastingState:
-            return CGPoint(x: bear.position.x - 118, y: bear.position.y + 30) // For CastingState (different position)
+        case is ReelingState:
+            return CGPoint(x: bear.position.x - 57, y: bear.position.y + 41) // For CastingState (different position)
         default:
             return CGPoint(x: bear.position.x - 77, y: bear.position.y - 40) // Ensure all cases are handled
         }
