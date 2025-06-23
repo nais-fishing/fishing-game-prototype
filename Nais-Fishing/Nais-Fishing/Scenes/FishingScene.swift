@@ -68,7 +68,7 @@ class FishingScene: SKScene, SKPhysicsContactDelegate {
     }
     
     func setupBear() {
-        bear = SKSpriteNode(imageNamed: "bear-idle-test")
+        bear = SKSpriteNode(imageNamed: "bear-idle")
         bear.name = "bearNode" // penting! agar FSM bisa akses dengan childNode(withName:)
 
         bear.position = CGPoint(x: -250, y: 50)
@@ -82,23 +82,20 @@ class FishingScene: SKScene, SKPhysicsContactDelegate {
     }
     
     func playCastAnimation(withPower power: CGFloat, completion: @escaping () -> Void) {
+        
         // Hitung jarak berdasarkan power
         let distance = power * 2  // skala lempar
-
-        // Buat umpan kotak merah sebagai placeholder
-        let baitSize = CGSize(width: 20, height: 20)
-        let bait = SKShapeNode(rectOf: baitSize, cornerRadius: 4)
-        bait.fillColor = .red
-        bait.strokeColor = .clear
-        bait.zPosition = 2
-        bait.name = "bait"
-
-        bait.position = CGPoint(x: -150, y: 0)
-        addChild(bait)
-
-        // Hitung target posisi lempar
-        let target = bait.position.x + distance
-        bait.position = CGPoint(x: target, y: bait.position.y)
+        
+        // Set initial casting position (at bear's fishing rod tip)
+        let startPosition = CGPoint(x: bear.position.x + 50, y: bear.position.y)
+        
+        // Calculate target position for casting
+        let targetX = startPosition.x + distance
+        let targetY = startPosition.y - 130 // Cast into water
+        let targetPosition = CGPoint(x: targetX, y: targetY)
+        
+        hookSystem.moveBait(to: targetPosition)
+        
     }
     
     func setupPowerBar() {
@@ -113,7 +110,7 @@ class FishingScene: SKScene, SKPhysicsContactDelegate {
         powerBarBackground.alpha = 0.7
 
         // Posisi kiri bawah layar
-        powerBarBackground.position = CGPoint(x: -200, y: 50)
+        powerBarBackground.position = CGPoint(x: -250, y: 90)
 
         // Fill (merah)
         let fillRect = CGRect(x: -barWidth / 2, y: -barHeight / 2, width: 0, height: barHeight)
@@ -238,11 +235,17 @@ class FishingScene: SKScene, SKPhysicsContactDelegate {
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         // Misalnya: Saat pertama disentuh, masuk ke CastingState
         let previousState = stateMachine.currentState
+        
         stateMachine.enter(CastingState.self)
+    
         showPowerBar()
         
         if let newState = stateMachine.currentState {
             fishingLineSystem.handleStateTransition(from: previousState, to: newState)
+        }
+        
+        if previousState is WaitingForHookState {
+            hookSystem.removeBait()
         }
     }
 }
@@ -254,7 +257,7 @@ extension FishingScene: HookSystemDelegate {
         
         if stateMachine.currentState is WaitingForHookState {
             stateMachine.enter(ReelingState.self)
-        }
+        } // trigger reeling state
         // You can add score updates, sound effects, or other game logic here
         // For example:
         // gameScore += 10
@@ -271,14 +274,17 @@ extension FishingScene: HookSystemDelegate {
 
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         if let bear = self.childNode(withName: "bearNode") as? SKSpriteNode {
-                bear.texture = SKTexture(imageNamed: "bear-waiting-test")
+                bear.texture = SKTexture(imageNamed: "bear-waiting")
             }
         
         hidePowerBar()
         
         if stateMachine.currentState is CastingState {
+            hookSystem.removeBait()
+            hookSystem.setupBait()
             stateMachine.enter(WaitingForHookState.self)
         }
+        
     }
 
 }
