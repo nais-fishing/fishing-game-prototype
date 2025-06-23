@@ -17,6 +17,6 @@ class IdleState: GKState {
     override func didEnter(from previousState: GKState?) {
         // Set sprite idle
         let bear = scene.childNode(withName: "bearNode") as! SKSpriteNode
-        bear.texture = SKTexture(imageNamed: "bear-idle-test")
+        bear.texture = SKTexture(imageNamed: "bear-idle")
     }
 }

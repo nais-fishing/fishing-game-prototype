@@ -39,8 +39,8 @@ class HookSystem {
         guard let scene = scene else { return }
         
         bait = SKSpriteNode(imageNamed: "bait")
-        bait.size = CGSize(width: 25, height: 25)
-        bait.position = CGPoint(x: -90, y: -30)
+        bait.size = CGSize(width: 30, height: 30)
+        bait.position = CGPoint(x: -30, y: -75)
         bait.zPosition = 3
 
         //Set up physics body for bait

@@ -20,6 +20,7 @@ class FishingScene: SKScene, SKPhysicsContactDelegate {
     var stateMachine: FishingGameStateMachine!
     var castingManager: CastingManager!
     var hookSystem: HookSystem!
+    var fishingLineSystem: FishingLineSystem!
     
     var isFishCaught: Bool = false
     
@@ -32,6 +33,7 @@ class FishingScene: SKScene, SKPhysicsContactDelegate {
         spawnFishes()
         
         setupHookSystem()
+        setupFishingLineSystem()
         
         scaleMode = .resizeFill
         
@@ -60,10 +62,10 @@ class FishingScene: SKScene, SKPhysicsContactDelegate {
     func setupBear() {
         bear = SKSpriteNode(imageNamed: "bear-idle-test")
         bear.name = "bearNode" // penting! agar FSM bisa akses dengan childNode(withName:)
-        bear.position = CGPoint(x: -200, y: 0)
+        bear.position = CGPoint(x: -250, y: 50)
         bear.zPosition = 1
         
-        bear.size = CGSize(width: 100, height: 100)
+        bear.size = CGSize(width: 250, height: 250)
         
         addChild(bear)
         
@@ -73,6 +75,11 @@ class FishingScene: SKScene, SKPhysicsContactDelegate {
     func setupHookSystem() {
         hookSystem = HookSystem(scene: self)
         hookSystem.delegate = self
+    }
+    
+    func setupFishingLineSystem() {
+        fishingLineSystem = FishingLineSystem(scene: self)
+        fishingLineSystem.delegate = self
     }
     
     func setupFish() {
@@ -146,7 +153,17 @@ class FishingScene: SKScene, SKPhysicsContactDelegate {
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         // Misalnya: Saat pertama disentuh, masuk ke CastingState
+        let previousState = stateMachine.currentState
         stateMachine.enter(CastingState.self)
+        
+        if let newState = stateMachine.currentState {
+            fishingLineSystem.handleStateTransition(from: previousState, to: newState)
+        }
+    }
+    
+    override func update(_ currentTime: TimeInterval) {
+            // Update fishing line every frame
+            fishingLineSystem.updateLine()
     }
 }
 
@@ -167,4 +184,43 @@ extension FishingScene: HookSystemDelegate {
         
         // You can add additional effects here if needed
     }
+}
+
+extension FishingScene: FishingLineSystemDelegate {
+    
+    func getRodPosition() -> CGPoint {
+        guard let state = getCurrentGameState() else {
+            fatalError("Current state is nil")
+        }
+        
+        switch state {
+        case is WaitingForHookState:
+            return CGPoint(x: bear.position.x + 77, y: bear.position.y - 20) // For WaitingForHookState
+        case is CastingState:
+            return CGPoint(x: bear.position.x - 118, y: bear.position.y + 30) // For CastingState (different position)
+        default:
+            return CGPoint(x: bear.position.x - 77, y: bear.position.y - 40) // Ensure all cases are handled
+        }
+    }
+    
+    func getCurrentBaitPosition() -> CGPoint {
+        return hookSystem.getBaitPosition()
+    }
+    
+    func getCurrentGameState() -> GKState? {
+        return stateMachine.currentState
+    }
+    
+    func getBaitDistance() -> CGFloat {
+        // Calculate distance based on your near-far system
+        // This is just an example - replace with your actual distance calculation
+        let rodTip = getRodPosition()
+        let bait = getCurrentBaitPosition()
+        
+        let distance = sqrt(pow(bait.x - rodTip.x, 2) + pow(bait.y - rodTip.y, 2))
+        let maxDistance: Float = 300.0 // Adjust based on your game's max cast distance
+        
+        return CGFloat(min(Float(distance) / maxDistance, 1.0)) // Normalize to 0.0-1.0
+    }
+    
 }
