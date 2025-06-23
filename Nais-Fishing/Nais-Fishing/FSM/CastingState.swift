@@ -10,6 +10,8 @@ import GameplayKit
 class CastingState: GKState {
     unowned let scene: FishingScene
     
+    var bear: SKSpriteNode?
+    
     init(scene: FishingScene) {
         self.scene = scene
     }
@@ -45,8 +47,8 @@ class CastingState: GKState {
         if let bear = scene.childNode(withName: "bearNode") as? SKSpriteNode {
             bear.texture = SKTexture(imageNamed: "bear-waiting-test")
         }
-      
-        bear.texture = SKTexture(imageNamed: "bear-casting")
+        
+        bear?.texture = SKTexture(imageNamed: "bear-casting")
 
         
         scene.playCastAnimation(withPower: scene.castPower) {
