@@ -25,7 +25,7 @@ class FishingScene: SKScene, SKPhysicsContactDelegate {
     var bait: SKSpriteNode!
     var caughtSign: SKLabelNode!
     
-    var stateMachine: FishingGameStateMachine!
+    //var stateMachine: FishingGameStateMachine!
     var castingManager: CastingManager!
     var hookSystem: HookSystem!
     var fishingLineSystem: FishingLineSystem!
@@ -142,6 +142,7 @@ class FishingScene: SKScene, SKPhysicsContactDelegate {
         lastUpdateTime = currentTime
 
         stateMachine.update(deltaTime: delta)
+        fishingLineSystem.updateLine()
     }
 
     func updatePowerBar() {
@@ -243,11 +244,6 @@ class FishingScene: SKScene, SKPhysicsContactDelegate {
         if let newState = stateMachine.currentState {
             fishingLineSystem.handleStateTransition(from: previousState, to: newState)
         }
-    }
-    
-    override func update(_ currentTime: TimeInterval) {
-            // Update fishing line every frame
-            fishingLineSystem.updateLine()
     }
 }
 
