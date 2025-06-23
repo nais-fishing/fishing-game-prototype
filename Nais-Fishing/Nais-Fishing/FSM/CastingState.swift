@@ -13,16 +13,40 @@ class CastingState: GKState {
     init(scene: FishingScene) {
         self.scene = scene
     }
-    
+
     override func didEnter(from previousState: GKState?) {
-        guard let bear = scene.childNode(withName: "bearNode") as? SKSpriteNode else {
-            print("❌ Bear node not found in CastingState")
-            return
+
+        scene.castPower = 0
+        scene.isCharging = true
+        scene.showPowerBar()
+        
+        if let bear = scene.childNode(withName: "bearNode") as? SKSpriteNode {
+            bear.texture = SKTexture(imageNamed: "bear-casting-test")
         }
         
-        bear.texture = SKTexture(imageNamed: "bear-casting-test")
+        print("⚡ Charging started")
+    }
+
+    override func update(deltaTime seconds: TimeInterval) {
+
+        if scene.isCharging {
+            scene.castPower += CGFloat(seconds * 100)
+            if scene.castPower > scene.maxCastPower {
+                scene.castPower = scene.maxCastPower
+            }
+            scene.updatePowerBar()
+        }
+    }
+
+    override func willExit(to nextState: GKState) {
+        scene.isCharging = false
+        print("🎯 Final cast power: \(scene.castPower)")
         
-        scene.castingManager.playCastingAnimation {
+        if let bear = scene.childNode(withName: "bearNode") as? SKSpriteNode {
+            bear.texture = SKTexture(imageNamed: "bear-waiting-test")
+        }
+        
+        scene.playCastAnimation(withPower: scene.castPower) {
             self.stateMachine?.enter(WaitingForHookState.self)
         }
     }
