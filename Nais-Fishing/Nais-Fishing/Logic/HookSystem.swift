@@ -31,7 +31,7 @@ class HookSystem {
     init(scene: SKScene) {
         self.scene = scene
         
-        setupBait()
+        //setupBait()
         setupWarning()
     }
     
@@ -40,7 +40,7 @@ class HookSystem {
         
         bait = SKSpriteNode(imageNamed: "bait")
         bait.size = CGSize(width: 30, height: 30)
-        bait.position = CGPoint(x: -30, y: -75)
+        bait.position = CGPoint(x: -30, y: -85)
         bait.zPosition = 3
 
         //Set up physics body for bait
@@ -50,7 +50,7 @@ class HookSystem {
         bait.physicsBody?.categoryBitMask = 1 // Bait category
         bait.physicsBody?.contactTestBitMask = 2 // Test contact with fish
         bait.physicsBody?.collisionBitMask = 0 // No collision
-                
+        
         scene.addChild(bait)
                 
         // Add subtle bobbing animation to bait
@@ -131,7 +131,11 @@ class HookSystem {
     func getBaitPosition() -> CGPoint {
         return bait?.position ?? CGPoint.zero
     }
-        
+      
+    func removeBait() {
+        bait?.removeFromParent()
+    }
+    
     func resetCatchState() {
         isFishCaught = false
         caughtSign?.alpha = 0

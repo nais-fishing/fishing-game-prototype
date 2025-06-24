@@ -147,6 +147,7 @@ class FishingLineSystem {
         
         let path = createLinePath(from: startPoint, to: endPoint, tension: properties.tension, distance: distance, isStraight: properties.isStraight)
         
+        fishingLine.isHidden = false
         fishingLine.path = path
         fishingLine.strokeColor = properties.color
         fishingLine.lineWidth = properties.width
@@ -168,8 +169,7 @@ class FishingLineSystem {
     private func hideLine() {
         guard let fishingLine = fishingLine, isLineVisible else { return }
         isLineVisible = false
-        let fadeOut = SKAction.fadeOut(withDuration: 0.2)
-        fishingLine.run(fadeOut)
+        fishingLine.isHidden = true
     }
     
     private func createLinePath(from startPoint: CGPoint, to endPoint: CGPoint, tension: CGFloat, distance: CGFloat, isStraight: Bool) -> CGPath {
@@ -202,39 +202,6 @@ class FishingLineSystem {
         return path
         
     }
-    
-    func animateLineCasting(from startPoint: CGPoint, to endPoint: CGPoint, duration: TimeInterval, completion: @escaping () -> Void) {
-        guard let fishingLine = fishingLine else { return }
-        
-        // Start with line at bear position
-        var currentPath = createLinePath(from: startPoint, to: startPoint, tension: 0, distance: 0, isStraight: true)
-        fishingLine.path = currentPath
-        fishingLine.alpha = 1.0
-        isLineVisible = true
-        
-        // Animate line extending to bait position
-        let steps = 20
-        let stepDuration = duration / Double(steps)
-        
-        var currentStep = 0
-        let timer = Timer.scheduledTimer(withTimeInterval: stepDuration, repeats: true) { timer in
-            currentStep += 1
-            let progress = CGFloat(currentStep) / CGFloat(steps)
-            
-            let intermediatePoint = CGPoint(
-                x: startPoint.x + (endPoint.x - startPoint.x) * progress,
-                y: startPoint.y + (endPoint.y - startPoint.y) * progress
-            )
-            
-            currentPath = self.createLinePath(from: startPoint, to: intermediatePoint, tension: 0.2 * progress, distance: 0, isStraight: true)
-            fishingLine.path = currentPath
-            
-            if currentStep >= steps {
-                timer.invalidate()
-                completion()
-            }
-        }
-    }
 }
 
 extension FishingLineSystem {
@@ -243,16 +210,9 @@ extension FishingLineSystem {
         // Special animations for state transitions
         guard let delegate = delegate else { return }
         
-        let rodTipPosition = delegate.getRodPosition()
-        let baitPosition = delegate.getCurrentBaitPosition()
-        
         switch newState {
         case is CastingState:
             print("casting. . .")
-            // Animate line casting
-            animateLineCasting(from: rodTipPosition, to: baitPosition, duration: 1.0) {
-                 //Casting animation complete
-            }
             
 //        case is ReeelingState:
 //            // Change line color immediately to indicate reeling

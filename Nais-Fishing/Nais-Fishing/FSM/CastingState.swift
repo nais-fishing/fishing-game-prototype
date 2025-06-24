@@ -15,7 +15,7 @@ class CastingState: GKState {
     init(scene: FishingScene) {
         self.scene = scene
     }
-
+    
     override func didEnter(from previousState: GKState?) {
 
         scene.castPower = 0
@@ -23,7 +23,7 @@ class CastingState: GKState {
         scene.showPowerBar()
         
         if let bear = scene.childNode(withName: "bearNode") as? SKSpriteNode {
-            bear.texture = SKTexture(imageNamed: "bear-casting-test")
+            bear.texture = SKTexture(imageNamed: "bear-casting")
         }
         
         print("⚡ Charging started")
@@ -44,9 +44,9 @@ class CastingState: GKState {
         scene.isCharging = false
         print("🎯 Final cast power: \(scene.castPower)")
         
-        if let bear = scene.childNode(withName: "bearNode") as? SKSpriteNode {
-            bear.texture = SKTexture(imageNamed: "bear-waiting-test")
-        }
+//        if let bear = scene.childNode(withName: "bearNode") as? SKSpriteNode {
+//            bear.texture = SKTexture(imageNamed: "bear-waiting")
+//        }
         
         bear?.texture = SKTexture(imageNamed: "bear-casting")
 
