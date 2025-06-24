@@ -15,6 +15,8 @@ class FishingScene: SKScene, SKPhysicsContactDelegate {
     var bear: SKSpriteNode!
     var powerBarBackground: SKShapeNode!
     var powerBarFill: SKShapeNode!
+    var fishingButton: SKSpriteNode!
+    
     var lastUpdateTime: TimeInterval = 0
     var castPower: CGFloat = 0.0
     var maxCastPower: CGFloat = 100.0
@@ -40,6 +42,7 @@ class FishingScene: SKScene, SKPhysicsContactDelegate {
         setupRiver()
         setupBear()
         setupPowerBar()
+        setupFishingButton()
         spawnFishes()
         
         setupHookSystem()
@@ -163,6 +166,20 @@ class FishingScene: SKScene, SKPhysicsContactDelegate {
         fishingLineSystem.delegate = self
     }
     
+    func setupFishingButton() {
+        fishingButton = SKSpriteNode(imageNamed: "button")
+        fishingButton.name = "fishingButton"
+        
+        fishingButton.position = CGPoint(x: (size.width/2) - 75, y: -size.height/2 + 75)
+        fishingButton.zPosition = 100
+        
+        fishingButton.size = CGSize(width: 100, height: 100)
+        
+        fishingButton.isUserInteractionEnabled = false
+        
+        addChild(fishingButton)
+    }
+    
     func setupFish() {
         let fish = SKSpriteNode(color: .white, size: CGSize(width: CGFloat.random(in: 20...30), height: CGFloat.random(in: 35...45))) // randomize besar ikan
         //fish.alpha = 0 // agar fishnya transparan
@@ -234,18 +251,13 @@ class FishingScene: SKScene, SKPhysicsContactDelegate {
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         // Misalnya: Saat pertama disentuh, masuk ke CastingState
-        let previousState = stateMachine.currentState
         
-        stateMachine.enter(CastingState.self)
-    
-        showPowerBar()
+        guard let touch = touches.first else { return }
+        let location = touch.location(in: self)
+        let touchedNode = atPoint(location)
         
-        if let newState = stateMachine.currentState {
-            fishingLineSystem.handleStateTransition(from: previousState, to: newState)
-        }
-        
-        if previousState is WaitingForHookState {
-            hookSystem.removeBait()
+        if touchedNode.name == "fishingButton" {
+            handleFishingButtonPressed()
         }
     }
 }
@@ -273,6 +285,35 @@ extension FishingScene: HookSystemDelegate {
     }
 
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        guard let touch = touches.first else { return }
+        let location = touch.location(in: self)
+        let touchedNode = atPoint(location)
+        
+        if touchedNode.name == "fishingButton" {
+            handleFishingButtonReleased()
+        }
+    }
+    
+    func handleFishingButtonPressed() {
+        let previousState = stateMachine.currentState
+        
+        stateMachine.enter(CastingState.self)
+    
+        showPowerBar()
+        
+        if let newState = stateMachine.currentState {
+            fishingLineSystem.handleStateTransition(from: previousState, to: newState)
+        }
+        
+        if previousState is WaitingForHookState {
+            hookSystem.removeBait()
+        }
+        
+        let scaleDown = SKAction.scale(to: 0.975, duration: 0.1)
+        fishingButton.run(scaleDown)
+    }
+    
+    func handleFishingButtonReleased() {
         if let bear = self.childNode(withName: "bearNode") as? SKSpriteNode {
                 bear.texture = SKTexture(imageNamed: "bear-waiting")
             }
@@ -285,6 +326,8 @@ extension FishingScene: HookSystemDelegate {
             stateMachine.enter(WaitingForHookState.self)
         }
         
+        let scaleUp = SKAction.scale(to: 1.0, duration: 0.1)
+        fishingButton.run(scaleUp)
     }
 
 }
