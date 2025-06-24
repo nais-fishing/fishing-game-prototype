@@ -17,7 +17,7 @@ class GameViewController: UIViewController {
         if let skView = self.view as? SKView {
             
             // Buat scene dengan ukuran sama dengan view
-            let scene = FishingScene(size: CGSize(width: 1334, height: 750))
+            let scene = StartScene(size: CGSize(width: 1334, height: 750))
             
             // Set scale mode
             scene.scaleMode = .resizeFill
