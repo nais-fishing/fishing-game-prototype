@@ -16,6 +16,7 @@ class FishingScene: SKScene, SKPhysicsContactDelegate {
     var powerBarBackground: SKShapeNode!
     var powerBarFill: SKShapeNode!
     var fishingButton: SKSpriteNode!
+    var castBar: SKSpriteNode!
     
     var lastUpdateTime: TimeInterval = 0
     var castPower: CGFloat = 0.0
@@ -104,21 +105,29 @@ class FishingScene: SKScene, SKPhysicsContactDelegate {
     func setupPowerBar() {
         let barWidth: CGFloat = 150
         let barHeight: CGFloat = 15
-
+        
+        castBar = SKSpriteNode(imageNamed: "cast-bar")
+        castBar.name = "castBar"
+        castBar.position = CGPoint(x: -250, y: 90)
+        castBar.zPosition = 102
+        castBar.size = CGSize(width: barWidth + 150, height: 160)
+        addChild(castBar)
+        castBar.isHidden = true
+                
         // Background (abu-abu)
-        powerBarBackground = SKShapeNode(rectOf: CGSize(width: barWidth, height: barHeight), cornerRadius: 10)
-        powerBarBackground.fillColor = .gray
+        powerBarBackground = SKShapeNode(rectOf: CGSize(width: barWidth, height: barHeight), cornerRadius: 0)
+        powerBarBackground.fillColor = .lightBlue
         powerBarBackground.strokeColor = .clear
         powerBarBackground.zPosition = 100
-        powerBarBackground.alpha = 0.7
+        powerBarBackground.alpha = 1
 
         // Posisi kiri bawah layar
         powerBarBackground.position = CGPoint(x: -250, y: 90)
 
         // Fill (merah)
         let fillRect = CGRect(x: -barWidth / 2, y: -barHeight / 2, width: 0, height: barHeight)
-        powerBarFill = SKShapeNode(rect: fillRect, cornerRadius: 10)
-        powerBarFill.fillColor = .blue
+        powerBarFill = SKShapeNode(rect: fillRect, cornerRadius: 0)
+        powerBarFill.fillColor = .lightYellow
         powerBarFill.strokeColor = .clear
         powerBarFill.zPosition = 101
 
@@ -130,11 +139,13 @@ class FishingScene: SKScene, SKPhysicsContactDelegate {
 
     func showPowerBar() {
         powerBarBackground.isHidden = false
+        castBar.isHidden = false
         updatePowerBar()
     }
 
     func hidePowerBar() {
         powerBarBackground.isHidden = true
+        castBar.isHidden = true
     }
     
     override func update(_ currentTime: TimeInterval) {
@@ -152,8 +163,8 @@ class FishingScene: SKScene, SKPhysicsContactDelegate {
         let powerRatio = min(castPower / maxCastPower, 1.0)
         let newWidth = maxWidth * powerRatio
 
-        let fillRect = CGRect(x: -maxWidth / 2, y: -10, width: newWidth, height: 20)
-        barFill.path = CGPath(roundedRect: fillRect, cornerWidth: 10, cornerHeight: 10, transform: nil)
+        let fillRect = CGRect(x: -maxWidth / 2, y: -7.5, width: newWidth, height: 15)
+        barFill.path = CGPath(roundedRect: fillRect, cornerWidth: 0, cornerHeight: 0, transform: nil)
     }
         
     func setupHookSystem() {
