@@ -15,9 +15,22 @@
 		233D4FA22E0B33590070496C /* Infp.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Infp.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		E1D087E92E0BB80F005C75AC /* Exceptions for "Nais-Fishing" folder in "Nais-Fishing" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 230E74532E02A332009EFF59 /* Nais-Fishing */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		230E74562E02A332009EFF59 /* Nais-Fishing */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				E1D087E92E0BB80F005C75AC /* Exceptions for "Nais-Fishing" folder in "Nais-Fishing" target */,
+			);
 			path = "Nais-Fishing";
 			sourceTree = "<group>";
 		};
@@ -262,6 +275,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = D65356M48A;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Nais-Fishing/Info.plist";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
@@ -289,6 +303,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = D65356M48A;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Nais-Fishing/Info.plist";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;

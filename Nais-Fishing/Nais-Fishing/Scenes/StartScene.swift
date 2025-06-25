@@ -29,7 +29,7 @@ class StartScene: SKScene, MultiplayerManagerDelegate {
     }
     
     func setupTitle () {
-        title = SKSpriteNode(imageNamed: "title")
+        title = SKSpriteNode(imageNamed: "title-new")
         title.position = CGPoint(x: 0, y: 75)
         title.zPosition = 10
         
@@ -56,31 +56,31 @@ class StartScene: SKScene, MultiplayerManagerDelegate {
     }
     
     func setup1PButton() {
-        button1P = SKSpriteNode(imageNamed: "start-button")
+        button1P = SKSpriteNode(imageNamed: "button-1p")
         button1P.name = "1P"
         
         button1P.zPosition = 5
-        button1P.position = CGPoint(x: 0, y: -50)
+        button1P.position = CGPoint(x: -125, y: -50)
         button1P.size = CGSize(width: 210, height: 140)
         
         addChild(button1P)
     }
     
     func setup2PButton() {
-        button2P = SKSpriteNode(imageNamed: "start-button")
+        button2P = SKSpriteNode(imageNamed: "button-2p")
         button2P.name = "2P"
         
         button2P.zPosition = 5
-        button2P.position = CGPoint(x: 0, y: -120) // di bawah 1P
+        button2P.position = CGPoint(x: 125, y: -50) // di bawah 1P
         button2P.size = CGSize(width: 210, height: 140)
         
-        let label = SKLabelNode(text: "Multiplayer")
-        label.fontName = "AvenirNext-Bold"
-        label.fontSize = 18
-        label.fontColor = .white
-        label.verticalAlignmentMode = .center
-        label.zPosition = 6
-        button2P.addChild(label)
+//        let label = SKLabelNode(text: "Multiplayer")
+//        label.fontName = "AvenirNext-Bold"
+//        label.fontSize = 18
+//        label.fontColor = .white
+//        label.verticalAlignmentMode = .center
+//        label.zPosition = 6
+//        button2P.addChild(label)
         
         addChild(button2P)
     }

@@ -45,7 +45,7 @@ class FishingScene: SKScene, SKPhysicsContactDelegate {
     var lastTouchLocation: CGPoint?
     
     //random ikan
-    let fishNames = ["cupang", "hiu", "ubur", "tulang", "nemo"]
+    let fishNames = ["beta", "shark", "jellyfish", "bone", "nemo"]
     
     //var stateMachine: FishingGameStateMachine!
     var castingManager: CastingManager!
@@ -61,11 +61,16 @@ class FishingScene: SKScene, SKPhysicsContactDelegate {
     
     var buttonRestart: SKSpriteNode!
     var popupGameOver: SKSpriteNode!
+    var gameOverText: SKSpriteNode!
+    var scoreText: SKLabelNode!
 
     //countdown
     var countdownLabel: SKLabelNode!
     var gameTimer: Timer?
     var timeLeft: Int = 60 // total durasi countdown
+    
+    var timeAndScore: SKSpriteNode!
+    var playerName: SKLabelNode!
     
     //multiplayer
     var multiplayerManager: MultiplayerManager!
@@ -88,6 +93,7 @@ class FishingScene: SKScene, SKPhysicsContactDelegate {
         setupFishingLineSystem()
         
         setupScoreLabel()
+        setupBox()
         
         setupCountdownLabel()
         startCountdownTimer()
@@ -135,9 +141,21 @@ class FishingScene: SKScene, SKPhysicsContactDelegate {
         
         ember1 = SKSpriteNode(imageNamed: "ember1")
         ember1.size = CGSize(width: 100, height: 100)
-        ember1.position = CGPoint(x: -270, y: -90)
+        ember1.position = CGPoint(x: -325, y: -110)
         ember1.zPosition = 2
         addChild(ember1)
+    }
+    
+    func setupBox() {
+        timeAndScore = SKSpriteNode(imageNamed: "box")
+        timeAndScore.position = CGPoint(x: -260, y: 145)
+        //timeAndScore.position = .zero
+        timeAndScore.zPosition = 10
+
+        // Gunakan ukuran scene yang sudah aktif
+        timeAndScore.size = CGSize(width: size.width / 2, height: size.height / 2)
+        
+        addChild(timeAndScore)
     }
     
     func playCastAnimation(withPower power: CGFloat, completion: @escaping () -> Void) {
@@ -302,7 +320,7 @@ class FishingScene: SKScene, SKPhysicsContactDelegate {
 
             isMiniGameActive = false
 
-            fishInBar.texture = SKTexture(imageNamed: "ember3") //INI HARUSNYA IKAN YANG DILEMPAR
+            fishInBar.texture = SKTexture(imageNamed: "shadowfish") //INI HARUSNYA IKAN YANG DILEMPAR
 
             if let bucket = ember1 {
                 let jumpUp = SKAction.move(to: CGPoint(x: bear.position.x + 60, y: bear.position.y + 100), duration: 0.7)
@@ -341,7 +359,7 @@ class FishingScene: SKScene, SKPhysicsContactDelegate {
         popup.alpha = 0
         addChild(popup)
         
-        let label = SKLabelNode(fontNamed: "AvenirNext-Bold")
+        let label = SKLabelNode(fontNamed: "Pixellari")
         label.text = "You got \(selectedFish.capitalized)"
         label.fontSize = 14
         label.fontColor = .black
@@ -365,7 +383,7 @@ class FishingScene: SKScene, SKPhysicsContactDelegate {
             self.hidePowerBar()
             
             self.score += 1
-                self.scoreLabel.text = "Score: \(self.score)"
+                self.scoreLabel.text = "\(self.score)"
 
             // Ganti ember berdasarkan score
             if self.score == 1 {
@@ -380,7 +398,7 @@ class FishingScene: SKScene, SKPhysicsContactDelegate {
         let remove = SKAction.removeFromParent()
         let reset = SKAction.run { [weak self] in
             self?.score += 1
-            self?.scoreLabel.text = "Score: \(self?.score ?? 0)"
+            self?.scoreLabel.text = "\(self?.score ?? 0)"
         }
 
         let sequence = SKAction.sequence([fadeIn, resetGame, wait, fadeOut, remove, reset])
@@ -388,17 +406,22 @@ class FishingScene: SKScene, SKPhysicsContactDelegate {
     }
     
     func setupScoreLabel() {
-        scoreLabel = SKLabelNode(fontNamed: "AvenirNext-Bold")
-        scoreLabel.fontSize = 16
-        scoreLabel.fontColor = .white
-        scoreLabel.position = CGPoint(
-            x: self.size.width / 2 - 100,  // dari kanan
-            y: self.size.height / 2 - 25   // dari atas
-        )
+        scoreLabel = SKLabelNode(fontNamed: "Pixellari")
+        scoreLabel.fontSize = 22
+        scoreLabel.fontColor = .newBlack
+        scoreLabel.position = CGPoint(x: -self.size.width / 2 + 285, y: self.size.height / 2 - 60)
         scoreLabel.horizontalAlignmentMode = .right // teks rata kanan
         scoreLabel.zPosition = 100
-        scoreLabel.text = "Score: \(score)"
+        scoreLabel.text = "\(score)"
         addChild(scoreLabel)
+        
+        playerName = SKLabelNode(fontNamed: "Pixellari")
+        playerName.fontSize = 19
+        playerName.fontColor = .newBlack
+        playerName.position = CGPoint(x: -self.size.width / 2 + 180, y: self.size.height / 2 - 60)
+        playerName.text = "PLAYER"
+        playerName.zPosition = 100
+        addChild(playerName)
     }
     
     //ini skor lawan
@@ -432,13 +455,13 @@ class FishingScene: SKScene, SKPhysicsContactDelegate {
     
     //ini buat nampilin timer
     func setupCountdownLabel() {
-        countdownLabel = SKLabelNode(fontNamed: "AvenirNext-Bold")
-        countdownLabel.fontSize = 16
-        countdownLabel.fontColor = .white
-        countdownLabel.position = CGPoint(x: -self.size.width / 2 + 100, y: self.size.height / 2 - 25)
+        countdownLabel = SKLabelNode(fontNamed: "Pixellari")
+        countdownLabel.fontSize = 25
+        countdownLabel.fontColor = .newBlack
+        countdownLabel.position = CGPoint(x: -self.size.width / 2 + 55, y: self.size.height / 2 - 60)
         countdownLabel.horizontalAlignmentMode = .left
         countdownLabel.zPosition = 100
-        countdownLabel.text = "Time: \(timeLeft)"
+        countdownLabel.text = "00:\(timeLeft)"
         addChild(countdownLabel)
     }
     
@@ -447,7 +470,7 @@ class FishingScene: SKScene, SKPhysicsContactDelegate {
             guard let self = self else { return }
 
             self.timeLeft -= 1
-            self.countdownLabel.text = "Time: \(self.timeLeft)"
+            self.countdownLabel.text = "00:\(self.timeLeft)"
 
             if self.timeLeft <= 0 {
                 self.gameTimer?.invalidate()
@@ -572,7 +595,9 @@ class FishingScene: SKScene, SKPhysicsContactDelegate {
         }
 
         if touchedNode.name == "fishingButton" {
-            handleFishingButtonPressed()
+            handleFishingButtonPressed(button: fishingButton)
+        } else if touchedNode.name == "restartButton" {
+            handleFishingButtonPressed(button: buttonRestart)
         }
         
     }
@@ -612,13 +637,15 @@ class FishingScene: SKScene, SKPhysicsContactDelegate {
         }
 
         if touchedNode.name == "fishingButton" {
-            handleFishingButtonReleased()
+            handleFishingButtonReleased(button: fishingButton)
         }
         
         if touchedNode.name == "restartButton" {
             let startScene = StartScene(size: self.size)
             let transition = SKTransition.fade(withDuration: 1)
             self.view?.presentScene(startScene, transition: transition)
+            
+            handleFishingButtonReleased(button: buttonRestart)
         }
     }
     
@@ -633,18 +660,25 @@ class FishingScene: SKScene, SKPhysicsContactDelegate {
         }
 
         // Buat popup Game Over
-        popupGameOver = SKSpriteNode(color: UIColor.black.withAlphaComponent(0.7), size: CGSize(width: 500, height: 300))
+        popupGameOver = SKSpriteNode(color: UIColor.black.withAlphaComponent(0.7), size: CGSize(width: 1920, height: 1080))
         popupGameOver.name = "gameOverPopup"
         popupGameOver.setScale(0.5)
         popupGameOver.zPosition = 9999
         popupGameOver.position = CGPoint(x: 0, y: 0)
         addChild(popupGameOver)
 
+        gameOverText = SKSpriteNode(imageNamed: "game-over")
+        gameOverText.name = "gameOverText"
+        gameOverText.size = CGSize(width: gameOverText.size.width / 3, height: gameOverText.size.height / 3)
+        gameOverText.position = CGPoint(x: 0, y: 100)
+        gameOverText.zPosition = 10000
+        popupGameOver.addChild(gameOverText)
+        
         // Buat tombol hitam
-        buttonRestart = SKSpriteNode(imageNamed: "button")
+        buttonRestart = SKSpriteNode(imageNamed: "button-menu")
         buttonRestart.name = "restartButton"
-        buttonRestart.setScale(0.4)
-        buttonRestart.position = CGPoint(x: 0, y: 0)
+        buttonRestart.size = CGSize(width: 420, height: 280)
+        buttonRestart.position = CGPoint(x: 0, y: -150)
         buttonRestart.zPosition = 10000
         popupGameOver.addChild(buttonRestart)
     }
@@ -675,7 +709,7 @@ extension FishingScene: HookSystemDelegate {
 
     }
 
-    func handleFishingButtonPressed() {
+    func handleFishingButtonPressed(button: SKSpriteNode) {
         let previousState = stateMachine.currentState
         
         stateMachine.enter(CastingState.self)
@@ -691,10 +725,11 @@ extension FishingScene: HookSystemDelegate {
         }
         
         let scaleDown = SKAction.scale(to: 0.975, duration: 0.1)
-        fishingButton.run(scaleDown)
+        button.run(scaleDown)
+        
     }
     
-    func handleFishingButtonReleased() {
+    func handleFishingButtonReleased(button: SKSpriteNode) {
         if let bear = self.childNode(withName: "bearNode") as? SKSpriteNode {
                 bear.texture = SKTexture(imageNamed: "bear-waiting")
             }
@@ -708,7 +743,7 @@ extension FishingScene: HookSystemDelegate {
         }
         
         let scaleUp = SKAction.scale(to: 1.0, duration: 0.1)
-        fishingButton.run(scaleUp)
+        button.run(scaleUp)
     }
 
 }
