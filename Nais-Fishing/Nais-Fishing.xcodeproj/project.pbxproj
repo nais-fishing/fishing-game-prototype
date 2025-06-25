@@ -6,8 +6,13 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		233D4FA32E0B33590070496C /* Infp.plist in Resources */ = {isa = PBXBuildFile; fileRef = 233D4FA22E0B33590070496C /* Infp.plist */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		230E74542E02A332009EFF59 /* Nais-Fishing.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Nais-Fishing.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		233D4FA22E0B33590070496C /* Infp.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Infp.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -32,6 +37,7 @@
 		230E744B2E02A332009EFF59 = {
 			isa = PBXGroup;
 			children = (
+				233D4FA22E0B33590070496C /* Infp.plist */,
 				230E74562E02A332009EFF59 /* Nais-Fishing */,
 				230E74552E02A332009EFF59 /* Products */,
 			);
@@ -109,6 +115,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				233D4FA32E0B33590070496C /* Infp.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

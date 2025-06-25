@@ -6,6 +6,7 @@
 //
 import SpriteKit
 import GameplayKit
+import MultipeerConnectivity
 
 class FishingScene: SKScene, SKPhysicsContactDelegate {
     
@@ -66,6 +67,13 @@ class FishingScene: SKScene, SKPhysicsContactDelegate {
     var gameTimer: Timer?
     var timeLeft: Int = 60 // total durasi countdown
     
+    //multiplayer
+    var multiplayerManager: MultiplayerManager!
+    var isMultiplayerMode: Bool = false
+    var opponentScore: Int = 0
+    var opponentScoreLabel: SKLabelNode!
+    var playerScores: [String: Int] = [:]
+    
     override func didMove(to view: SKView) {
         
         anchorPoint = CGPoint(x: 0.5, y: 0.5)
@@ -91,6 +99,10 @@ class FishingScene: SKScene, SKPhysicsContactDelegate {
         physicsWorld.contactDelegate = self
         
         gameStartTime = CACurrentMediaTime()
+        
+        if isMultiplayerMode {
+            setupScoreOpponent()
+        }
         
         print("✅ Game initialized with rod fishing mechanism!")
     }
@@ -389,6 +401,35 @@ class FishingScene: SKScene, SKPhysicsContactDelegate {
         addChild(scoreLabel)
     }
     
+    //ini skor lawan
+    func setupScoreOpponent() {
+        opponentScoreLabel = SKLabelNode(fontNamed: "AvenirNext-Bold")
+        opponentScoreLabel.fontSize = 16
+        opponentScoreLabel.fontColor = .cyan
+        opponentScoreLabel.position = CGPoint(x: self.size.width / 2 - 100, y: self.size.height / 2 - 50) // bawah score sendiri
+        opponentScoreLabel.horizontalAlignmentMode = .right
+        opponentScoreLabel.zPosition = 100
+        opponentScoreLabel.text = "Opponent: 0"
+        addChild(opponentScoreLabel)
+    }
+    
+    func playerScoreUpdated(peerID: MCPeerID, newScore: Int) {
+        // Simpan skor pemain lawan berdasarkan ID-nya
+        playerScores[peerID.displayName] = newScore
+        print("🔁 Skor \(peerID.displayName) diupdate jadi \(newScore)")
+
+        // Update tampilan label lawan
+        if isMultiplayerMode {
+            updateOpponentScoreLabel()
+        }
+    }
+    
+    func updateOpponentScoreLabel() {
+        if let (_, score) = playerScores.first {
+            opponentScoreLabel.text = "Opponent: \(score)"
+        }
+    }
+    
     //ini buat nampilin timer
     func setupCountdownLabel() {
         countdownLabel = SKLabelNode(fontNamed: "AvenirNext-Bold")
@@ -400,7 +441,7 @@ class FishingScene: SKScene, SKPhysicsContactDelegate {
         countdownLabel.text = "Time: \(timeLeft)"
         addChild(countdownLabel)
     }
-
+    
     func startCountdownTimer() {
         gameTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
             guard let self = self else { return }
@@ -531,7 +572,7 @@ class FishingScene: SKScene, SKPhysicsContactDelegate {
         }
 
         if touchedNode.name == "fishingButton" {
-           handleFishingButtonPressed()
+            handleFishingButtonPressed()
         }
         
     }
