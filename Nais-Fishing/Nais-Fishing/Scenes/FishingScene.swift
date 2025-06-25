@@ -45,7 +45,7 @@ class FishingScene: SKScene, SKPhysicsContactDelegate {
     var lastTouchLocation: CGPoint?
     
     //random ikan
-    let fishNames = ["beta", "shark", "jellyfish", "bone", "nemo"]
+    let fishNames = ["beta", "catfish", "jellyfish", "bone", "nemo"]
     
     //var stateMachine: FishingGameStateMachine!
     var castingManager: CastingManager!
@@ -80,6 +80,8 @@ class FishingScene: SKScene, SKPhysicsContactDelegate {
     var playerScores: [String: Int] = [:]
     
     override func didMove(to view: SKView) {
+        
+        hapticManager = HapticManager()
         
         anchorPoint = CGPoint(x: 0.5, y: 0.5)
         
@@ -409,7 +411,7 @@ class FishingScene: SKScene, SKPhysicsContactDelegate {
         scoreLabel = SKLabelNode(fontNamed: "Pixellari")
         scoreLabel.fontSize = 22
         scoreLabel.fontColor = .newBlack
-        scoreLabel.position = CGPoint(x: -self.size.width / 2 + 285, y: self.size.height / 2 - 60)
+        scoreLabel.position = CGPoint(x: -self.size.width / 2 + 275, y: self.size.height / 2 - 57)
         scoreLabel.horizontalAlignmentMode = .right // teks rata kanan
         scoreLabel.zPosition = 100
         scoreLabel.text = "\(score)"
@@ -418,7 +420,7 @@ class FishingScene: SKScene, SKPhysicsContactDelegate {
         playerName = SKLabelNode(fontNamed: "Pixellari")
         playerName.fontSize = 19
         playerName.fontColor = .newBlack
-        playerName.position = CGPoint(x: -self.size.width / 2 + 180, y: self.size.height / 2 - 60)
+        playerName.position = CGPoint(x: -self.size.width / 2 + 174, y: self.size.height / 2 - 56)
         playerName.text = "PLAYER"
         playerName.zPosition = 100
         addChild(playerName)
@@ -458,7 +460,7 @@ class FishingScene: SKScene, SKPhysicsContactDelegate {
         countdownLabel = SKLabelNode(fontNamed: "Pixellari")
         countdownLabel.fontSize = 25
         countdownLabel.fontColor = .newBlack
-        countdownLabel.position = CGPoint(x: -self.size.width / 2 + 55, y: self.size.height / 2 - 60)
+        countdownLabel.position = CGPoint(x: -self.size.width / 2 + 49, y: self.size.height / 2 - 57)
         countdownLabel.horizontalAlignmentMode = .left
         countdownLabel.zPosition = 100
         countdownLabel.text = "00:\(timeLeft)"
@@ -517,7 +519,7 @@ class FishingScene: SKScene, SKPhysicsContactDelegate {
     
     func setupFish() {
         let fish = SKSpriteNode(color: .white, size: CGSize(width: CGFloat.random(in: 20...30), height: CGFloat.random(in: 35...45))) // randomize besar ikan
-        //fish.alpha = 0 // agar fishnya transparan
+        fish.alpha = 0 // agar fishnya transparan
         
         let randomX = CGFloat.random(in: -75...75)
         let startY = size.height/2 + fish.size.height
@@ -588,7 +590,7 @@ class FishingScene: SKScene, SKPhysicsContactDelegate {
         guard let touch = touches.first else { return }
         let location = touch.location(in: self)
         let touchedNode = atPoint(location)
-
+        
         if isMiniGameActive {
             lastTouchLocation = location
             return
@@ -609,7 +611,7 @@ class FishingScene: SKScene, SKPhysicsContactDelegate {
 
         let currentLocation = touch.location(in: self)
         let deltaY = currentLocation.y - lastLocation.y
-
+        
         greenBar.position.y += deltaY
         lastTouchLocation = currentLocation
 
@@ -622,6 +624,10 @@ class FishingScene: SKScene, SKPhysicsContactDelegate {
         let maxY = centerY + (barHeight / 2) + 20
 
         greenBar.position.y = min(max(greenBar.position.y, minY), maxY)
+        
+        DispatchQueue.global().async { [weak self] in
+            self?.hapticManager?.playTouch()
+        }
     }
     
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -693,6 +699,12 @@ extension FishingScene: HookSystemDelegate {
         if stateMachine.currentState is WaitingForHookState {
             stateMachine.enter(ReelingState.self)
             isFishCaught = true
+            
+            DispatchQueue.global().async { [weak self] in
+                self?.hapticManager?.playPop()
+            }
+            //hapticManager?.playPop()
+            
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
                 self.startMiniGame()
             }

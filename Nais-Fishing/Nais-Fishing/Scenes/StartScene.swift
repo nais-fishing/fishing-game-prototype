@@ -10,6 +10,8 @@ import MultipeerConnectivity
 
 class StartScene: SKScene, MultiplayerManagerDelegate {
     
+    private var hapticManager: HapticManager?
+    
     var title: SKSpriteNode!
     var background: SKSpriteNode!
     var button1P: SKSpriteNode!
@@ -19,6 +21,8 @@ class StartScene: SKScene, MultiplayerManagerDelegate {
 
     
     override func didMove(to view: SKView) {
+        
+        hapticManager = HapticManager()
         
         anchorPoint = CGPoint(x: 0.5, y: 0.5)
         
@@ -129,6 +133,10 @@ class StartScene: SKScene, MultiplayerManagerDelegate {
                 } else if node.name == "2P" {
                     handleButtonPressed(button: button2P)
                 }
+        }
+        
+        DispatchQueue.global().async { [weak self] in
+            self?.hapticManager?.playPop()
         }
     }
     
